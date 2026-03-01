@@ -1,0 +1,23 @@
+{
+    "version": "1.0",
+    "file_records": [
+        {
+            "source_url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Props/Blocks/DexCube/dex_cube_instanceable.usd",
+            "source_hash": "385aa9018f6ff1e621c72c601b7834275c8588a0",
+            "target_url": "./dex_cube_instanceable.usd",
+            "target_hash": "782122b25c5c85d59815f0209482f67b9f65d07f"
+        },
+        {
+            "source_url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Props/Blocks/DexCube/Props/instanceable_meshes.usd",
+            "source_hash": "a11951f3d3ffecc4656e2149b3d07833a9792e60",
+            "target_url": "./Props/instanceable_meshes.usd",
+            "target_hash": "e323a865c18ad21a2145059fc602ae4311dcadb3"
+        },
+        {
+            "source_url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Props/Blocks/DexCube/Materials/dex_cube_mod.png",
+            "source_hash": "67c93a143deea5ac863a530e421f7f773237b007",
+            "target_url": "./Materials/dex_cube_mod.png",
+            "target_hash": "6d1ea31489003f03135c988b8a2c5d5f66860a3a"
+        }
+    ]
+}
