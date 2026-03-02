@@ -105,15 +105,21 @@ class ActionsCfg:
         debug_vis=True
     )
     '''
+
     # Set actions for the specific robot type (franka)
     arm_action: ActionTerm = DifferentialInverseKinematicsActionCfg(
         asset_name="robot",
         joint_names=["lss_arm_joint_1", "lss_arm_joint_2", "lss_arm_joint_3", "lss_arm_joint_4", 
                      "lss_arm_joint_6"],
         body_name="Wrist_Up",
-        controller=DifferentialIKControllerCfg(command_type="pose", use_relative_mode=True, ik_method="dls"),
+        controller=DifferentialIKControllerCfg(command_type="pose", 
+                                               use_relative_mode=True, 
+                                               ik_method="dls"),
         scale=0.5,
-        body_offset=DifferentialInverseKinematicsActionCfg.OffsetCfg(pos=[0.0, 0.0, 0.107]),
+        body_offset=DifferentialInverseKinematicsActionCfg.OffsetCfg(
+            pos=[0.0, 0.0, 0.107],
+        ),
+        debug_vis=True
     )
 
     gripper_action = mdp.BinaryJointPositionActionCfg(
@@ -136,7 +142,6 @@ class CommandsCfg:
             pos_x=(0.25, 0.25), pos_y=(0.2, 0.2), pos_z=(0.0, 0.0), roll=(0.0, 0.0), pitch=(0.0, 0.0), yaw=(-1.0, -1.0)
         ),
     )
-    pass
 
 
 @configclass
@@ -177,7 +182,7 @@ class EventCfg:
         mode="reset",
         params={
             #"pose_range": {"x": (0.15, 0.45), "y": (-0.25, 0.25), "z": (0.0, 0.0)},
-            "pose_range": {"x": (0.35, 0.35), "y": (0.0, 0.0), "z": (0.0, 0.0)},
+            "pose_range": {"x": (0.25, 0.25), "y": (0.0, 0.0), "z": (0.0, 0.0)},
             "velocity_range": {},
             "asset_cfg": SceneEntityCfg("object", body_names="Object"),
         },
@@ -278,30 +283,6 @@ class SesV2LssEnvCfg(ManagerBasedRLEnvCfg):
     events: EventCfg = EventCfg()
     curriculum = CurriculumCfg()
     
-    '''
-    # Set Cube as object
-    scene.object = RigidObjectCfg(
-        prim_path="{ENV_REGEX_NS}/Object",
-        init_state=RigidObjectCfg.InitialStateCfg(pos=[0.25, 0.0, 0.055], rot=[1, 0, 0, 0]),
-        spawn=UsdFileCfg(
-            usd_path=f"{ISAAC_NUCLEUS_DIR}/Props/Blocks/DexCube/dex_cube_instanceable.usd",
-            scale=(0.8, 0.8, 0.8),
-            mass_props=MassPropertiesCfg(
-                mass=0.05, # Set mass in kg (e.g., 100g for a small cube)
-            ),
-            rigid_props=RigidBodyPropertiesCfg(
-                linear_damping=0.01,   # Prevents sliding forever
-                angular_damping=0.05,  # Prevents spinning forever
-                max_depenetration_velocity=1.0, # Reduces "explosive" bounces on collision
-            ),
-            rigid_material=RigidBodyMaterialCfg(
-                restitution=0.0,      # 0.0 means no bounce (perfectly inelastic)
-                static_friction=0.5,
-                dynamic_friction=0.5,
-            )
-        ),
-    )
-    '''
     scene.object = RigidObjectCfg(
         prim_path="{ENV_REGEX_NS}/Object",
         init_state=RigidObjectCfg.InitialStateCfg(pos=[0.25, 0.0, 0.055], rot=[1, 0, 0, 0]),
@@ -333,7 +314,7 @@ class SesV2LssEnvCfg(ManagerBasedRLEnvCfg):
                 prim_path="{ENV_REGEX_NS}/Robot/Wrist_Up",
                 name="end_effector",
                 offset=OffsetCfg(
-                    pos=[0.0, 0.0, 0.1034],
+                    pos=[0.0, 0.0, 0.0]
                 ),
             ),
         ],
@@ -344,7 +325,7 @@ class SesV2LssEnvCfg(ManagerBasedRLEnvCfg):
         """Post initialization."""
         # general settings
         self.decimation = 2
-        self.episode_length_s = 50.0
+        self.episode_length_s = 5000.0
         
         # viewer settings
         self.viewer.eye = (8.0, 0.0, 5.0)

@@ -16,17 +16,28 @@ import os
 SES_V2_5DOF_CFG = ArticulationCfg(
     # Where is the USD file for this robot?
     spawn=sim_utils.UsdFileCfg(       
-        usd_path=f"source/assets/Collected_SES_V2_LSS_5DOF/SES_V2_LSS_5DOF.usd", 
-        activate_contact_sensors=False
+        usd_path=f"source/assets/Collected_SES_V2_LSS_5DOF/SES_V2_LSS_5DOF_NEW.usd", 
+        activate_contact_sensors=False,
+        rigid_props=sim_utils.RigidBodyPropertiesCfg(
+                rigid_body_enabled=True,
+                max_linear_velocity=1000.0,
+                max_angular_velocity=1000.0,
+                max_depenetration_velocity=5.0,
+                disable_gravity = True
+        ),
+
+        articulation_props=sim_utils.ArticulationRootPropertiesCfg(
+            enabled_self_collisions=True,
+        ),
     ),
 
     # What is its initial position of the robot, and its joints?
     init_state=ArticulationCfg.InitialStateCfg(
-        pos=(0.0, 0.0, 0.05),
+        pos=(0.0, 0.0, 0.00),
         joint_pos={
-            "lss_arm_joint_1": 3.14 * (90 / 180),
+            "lss_arm_joint_1": 0.0,
             "lss_arm_joint_2": 0.0,
-            "lss_arm_joint_3": -3.14 * (16 / 180),
+            "lss_arm_joint_3": 0.0,
             "lss_arm_joint_4": 0.0,
             "lss_arm_joint_6": 0.0,
 
@@ -38,7 +49,7 @@ SES_V2_5DOF_CFG = ArticulationCfg(
     # What parts of the robot move, and how stiff / damped are they?
     actuators={
         "arm": ImplicitActuatorCfg(
-            joint_names_expr=["lss_arm_joint_1", "lss_arm_joint_2", "lss_arm_joint_3", "lss_arm_joint_4", 
+            joint_names_expr=["lss_arm_joint_1", "lss_arm_joint_2", "lss_arm_joint_3", "lss_arm_joint_4",
                               "lss_arm_joint_6"],
             effort_limit_sim=1.37,
             velocity_limit=19.0,    
