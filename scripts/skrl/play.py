@@ -83,6 +83,43 @@ import skrl
 import torch
 from packaging import version
 
+import omni.log
+
+# Set the log level for the omni.usd component to Error only
+# This hides the [Warning] spam but keeps [Error] visible
+omni.log.get_log().set_channel_level(
+    "omni.usd", 
+    omni.log.Level.ERROR, 
+    omni.log.SettingBehavior.OVERRIDE
+)
+
+from pynput import keyboard
+
+key_input = 'z'
+
+def on_press(key):
+    global key_input
+    try:
+        # For alphanumeric keys (a-z, 0-9)
+        key_input = key.char
+    except AttributeError:
+        # For special keys (Space, Arrows, etc.)
+        # key.char doesn't exist here, so we use str(key) or a specific name
+        key_input = str(key) 
+        # Example: if you press Space, key_input will be 'Key.space'
+
+
+def on_release(key):
+    global key_input
+    #print('{0} released'.format(key))
+    key_input = 'z'
+    if key == keyboard.Key.esc:
+        # Stop listener
+        return False
+
+listener = keyboard.Listener(on_press=on_press, on_release=on_release)
+listener.start()
+
 # check for minimum supported skrl version
 SKRL_VERSION = "1.4.3"
 if version.parse(skrl.__version__) < version.parse(SKRL_VERSION):
@@ -124,8 +161,29 @@ else:
     algorithm = agent_cfg_entry_point.split("_cfg")[0].split("skrl_")[-1].lower()
 
 
+joint_1 = 0.0
+joint_2 = 0.0
+joint_3 = 0.0
+joint_4 = 0.0
+joint_5 = 0.0
+joint_6 = 0.0
+joint_7 = 0.0
+joint_gripper = 0.0
+
 @hydra_task_config(args_cli.task, agent_cfg_entry_point)
 def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, experiment_cfg: dict):
+    global joint_1
+    global joint_2
+    global joint_3
+    global joint_4
+    global joint_5
+    global joint_6
+    global joint_7
+    global joint_gripper
+    global key_input
+
+    joint_gripper = -1.0
+    
     """Play with skrl agent."""
     # grab task name for checkpoint path
     task_name = args_cli.task.split(":")[-1]
@@ -161,13 +219,15 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, expe
     elif args_cli.checkpoint:
         resume_path = os.path.abspath(args_cli.checkpoint)
     else:
-        resume_path = get_checkpoint_path(
-            log_root_path, run_dir=f".*_{algorithm}_{args_cli.ml_framework}", other_dirs=["checkpoints"]
-        )
-    log_dir = os.path.dirname(os.path.dirname(resume_path))
+        #resume_path = get_checkpoint_path(
+        #    log_root_path, run_dir=f".*_{algorithm}_{args_cli.ml_framework}", other_dirs=["checkpoints"]
+        #)
+        pass
+
+    #log_dir = os.path.dirname(os.path.dirname(resume_path))
 
     # set the log directory for the environment (works for all environment types)
-    env_cfg.log_dir = log_dir
+    #env_cfg.log_dir = log_dir
 
     # create isaac environment
     env = gym.make(args_cli.task, cfg=env_cfg, render_mode="rgb_array" if args_cli.video else None)
@@ -204,8 +264,9 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, expe
     experiment_cfg["agent"]["experiment"]["checkpoint_interval"] = 0  # don't generate checkpoints
     runner = Runner(env, experiment_cfg)
 
-    print(f"[INFO] Loading model checkpoint from: {resume_path}")
-    runner.agent.load(resume_path)
+    #print(f"[INFO] Loading model checkpoint from: {resume_path}")
+    #runner.agent.load(resume_path)
+    
     # set agent to evaluation mode
     runner.agent.set_running_mode("eval")
 
@@ -226,10 +287,57 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, expe
             # - single-agent (deterministic) actions
             else:
                 actions = outputs[-1].get("mean_actions", outputs[0])
+            
+            joint_1 = 0
+            joint_2 = 0
+            joint_3 = 0
+            joint_4 = 0
+            joint_5 = 0
+            joint_6 = 0
+            #joint_gripper = 0
+
             # env stepping
+            if key_input == 'q':
+                joint_1 = 0.5
+            elif key_input == 'a':  
+                joint_1 = -0.5 
+            elif key_input == 'w':
+                joint_2 = 0.5
+            elif key_input == 's':
+                joint_2 = -0.5
+            elif key_input == 'e':
+                joint_3 = 0.5
+            elif key_input == 'd':
+                joint_3 = -0.5
+            elif key_input == 't':
+                joint_4 = 0.5
+            elif key_input == 'g':
+                joint_4 = -0.5
+            elif key_input == 'y':
+                joint_5 = 0.5
+            elif key_input == 'h':
+                joint_5 = -0.5
+            elif key_input == 'u':
+                joint_6 = 0.5
+            elif key_input == 'j':
+                joint_6 = -0.5
+            elif key_input == 'n':
+                joint_gripper = 1.0
+            elif key_input == 'm':
+                joint_gripper = -1.0
+            else:
+                pass
+
+            actions = torch.tensor([joint_1, joint_2, joint_3, joint_4, joint_5, joint_6, 
+                                    joint_gripper], device='cuda:0')
+            
+            # env stepping
+            print("actions: ", actions)
             obs, _, _, _, _ = env.step(actions)
+        
         if args_cli.video:
             timestep += 1
+            
             # exit the play loop after recording one video
             if timestep == args_cli.video_length:
                 break

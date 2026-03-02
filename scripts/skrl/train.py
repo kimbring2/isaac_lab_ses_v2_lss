@@ -84,6 +84,16 @@ import gymnasium as gym
 import skrl
 from packaging import version
 
+import omni.log
+
+# Set the log level for the omni.usd component to Error only
+# This hides the [Warning] spam but keeps [Error] visible
+omni.log.get_log().set_channel_level(
+    "omni.usd", 
+    omni.log.Level.ERROR, 
+    omni.log.SettingBehavior.OVERRIDE
+)
+
 # check for minimum supported skrl version
 SKRL_VERSION = "1.4.3"
 if version.parse(skrl.__version__) < version.parse(SKRL_VERSION):

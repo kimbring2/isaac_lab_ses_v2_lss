@@ -10,14 +10,23 @@ from . import agents
 ##
 # Register Gym environments.
 ##
-
-
 gym.register(
     id="Template-Ses-V2-Lss-v0",
     entry_point="isaaclab.envs:ManagerBasedRLEnv",
     disable_env_checker=True,
     kwargs={
         "env_cfg_entry_point": f"{__name__}.ses_v2_lss_env_cfg:SesV2LssEnvCfg",
+        "skrl_cfg_entry_point": f"{agents.__name__}:skrl_ppo_cfg.yaml",
+    },
+)
+
+
+gym.register(
+    id="Template-Ses-V2-Lss-Play-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": f"{__name__}.ses_v2_lss_env_cfg:SesV2LssEnvCfg_PLAY",
         "skrl_cfg_entry_point": f"{agents.__name__}:skrl_ppo_cfg.yaml",
     },
 )
