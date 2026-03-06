@@ -11,7 +11,7 @@ from . import agents
 # Register Gym environments.
 ##
 gym.register(
-    id="Template-Ses-V2-Lss-v0",
+    id="SES-V2-LSS-v0",
     entry_point="isaaclab.envs:ManagerBasedRLEnv",
     disable_env_checker=True,
     kwargs={
@@ -22,7 +22,7 @@ gym.register(
 
 
 gym.register(
-    id="Template-Ses-V2-Lss-Play-v0",
+    id="SES-V2-LSS-Play-v0",
     entry_point="isaaclab.envs:ManagerBasedRLEnv",
     disable_env_checker=True,
     kwargs={
