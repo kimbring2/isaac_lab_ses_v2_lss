@@ -330,9 +330,10 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, expe
 
             actions = torch.tensor([joint_1, joint_2, joint_3, joint_4, joint_5, joint_6, 
                                     joint_gripper], device='cuda:0')
+            #actions = torch.tensor([joint_1, joint_2, joint_3, joint_gripper], device='cuda:0')
             
             # env stepping
-            print("actions: ", actions)
+            #print("actions: ", actions)
             obs, _, _, _, _ = env.step(actions)
         
         if args_cli.video:

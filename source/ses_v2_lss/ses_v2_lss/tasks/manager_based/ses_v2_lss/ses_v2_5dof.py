@@ -19,21 +19,14 @@ SES_V2_5DOF_CFG = ArticulationCfg(
         usd_path=f"source/assets/Collected_SES_V2_LSS_5DOF/SES_V2_LSS_5DOF_NEW.usd", 
         activate_contact_sensors=False,
         rigid_props=sim_utils.RigidBodyPropertiesCfg(
-                rigid_body_enabled=True,
-                max_linear_velocity=1000.0,
-                max_angular_velocity=1000.0,
-                max_depenetration_velocity=5.0,
-                disable_gravity = True
-        ),
-
-        articulation_props=sim_utils.ArticulationRootPropertiesCfg(
-            enabled_self_collisions=True,
+            disable_gravity=True
         ),
     ),
 
     # What is its initial position of the robot, and its joints?
     init_state=ArticulationCfg.InitialStateCfg(
-        pos=(0.0, 0.0, 0.00),
+        pos=(0.0, 0.0, 0.01),
+        #rot=(0.7071, 0.0, 0.7071, 0.0),
         joint_pos={
             "lss_arm_joint_1": 0.0,
             "lss_arm_joint_2": 0.0,
@@ -42,7 +35,7 @@ SES_V2_5DOF_CFG = ArticulationCfg(
             "lss_arm_joint_6": 0.0,
 
             "lss_arm_joint_5": 0.0,
-            "lss_arm_joint_7": 0.0
+            "lss_arm_joint_7": 0.0,
         },
     ),
 
@@ -51,20 +44,20 @@ SES_V2_5DOF_CFG = ArticulationCfg(
         "arm": ImplicitActuatorCfg(
             joint_names_expr=["lss_arm_joint_1", "lss_arm_joint_2", "lss_arm_joint_3", "lss_arm_joint_4",
                               "lss_arm_joint_6"],
-            effort_limit_sim=1.37,
+            effort_limit_sim=28.16,
             velocity_limit=19.0,    
             velocity_limit_sim=19.0,
-            stiffness=400.0,
-            damping=40.0,
+            stiffness=3200.0,
+            damping=320.0,
         ),
 
         "gripper": ImplicitActuatorCfg(
             joint_names_expr=["lss_arm_joint_5", "lss_arm_joint_7"],
-            effort_limit_sim=1.37,
+            effort_limit_sim=5.816,
             velocity_limit=19.0,
             velocity_limit_sim=19.0,
-            stiffness=200.0,
-            damping=80.0,
+            stiffness=1600.0,
+            damping=320.0,
         ),
     }
 )

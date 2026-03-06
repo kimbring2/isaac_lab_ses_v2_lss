@@ -112,12 +112,12 @@ class ActionsCfg:
         joint_names=["lss_arm_joint_1", "lss_arm_joint_2", "lss_arm_joint_3", "lss_arm_joint_4", 
                      "lss_arm_joint_6"],
         body_name="Wrist_Up",
-        controller=DifferentialIKControllerCfg(command_type="pose", 
-                                               use_relative_mode=True, 
+        controller=DifferentialIKControllerCfg(command_type="pose",
+                                               use_relative_mode=True,
                                                ik_method="dls"),
         scale=0.5,
         body_offset=DifferentialInverseKinematicsActionCfg.OffsetCfg(
-            pos=[0.0, 0.0, 0.107],
+            pos=[0.0, 0.0, 0.58],
         ),
         debug_vis=True
     )
@@ -287,17 +287,7 @@ class SesV2LssEnvCfg(ManagerBasedRLEnvCfg):
         prim_path="{ENV_REGEX_NS}/Object",
         init_state=RigidObjectCfg.InitialStateCfg(pos=[0.25, 0.0, 0.055], rot=[1, 0, 0, 0]),
         spawn=UsdFileCfg(
-            usd_path=f"source/assets/Collected_SES_V2_LSS_5DOF/dex_cube_instanceable_01.usd", 
-            rigid_props=RigidBodyPropertiesCfg(
-                solver_position_iteration_count=16,
-                solver_velocity_iteration_count=1,
-                max_angular_velocity=1000.0,
-                max_linear_velocity=1000.0,
-                disable_gravity=False,
-                linear_damping=0.01,   # Prevents sliding forever
-                angular_damping=0.05,  # Prevents spinning forever
-                max_depenetration_velocity=1.0, # Reduces "explosive" bounces on collision
-            ),
+            usd_path=f"source/assets/Collected_SES_V2_LSS_5DOF/dex_cube_instanceable_01.usd"
         ),
     )
     
@@ -314,7 +304,7 @@ class SesV2LssEnvCfg(ManagerBasedRLEnvCfg):
                 prim_path="{ENV_REGEX_NS}/Robot/Wrist_Up",
                 name="end_effector",
                 offset=OffsetCfg(
-                    pos=[0.0, 0.0, 0.0]
+                    pos=[0.0, 0.0, 0.1034]
                 ),
             ),
         ],
