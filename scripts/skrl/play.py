@@ -60,20 +60,25 @@ parser.add_argument("--real-time", action="store_true", default=False, help="Run
 
 # append AppLauncher cli args
 AppLauncher.add_app_launcher_args(parser)
+
 # parse the arguments
 args_cli, hydra_args = parser.parse_known_args()
+
 # always enable cameras to record video
 if args_cli.video:
     args_cli.enable_cameras = True
 
 # clear out sys.argv for Hydra
 sys.argv = [sys.argv[0]] + hydra_args
+
 # launch omniverse app
 app_launcher = AppLauncher(args_cli)
 simulation_app = app_launcher.app
 
-"""Rest everything follows."""
 
+
+
+"""Rest everything follows."""
 import os
 import random
 import time
