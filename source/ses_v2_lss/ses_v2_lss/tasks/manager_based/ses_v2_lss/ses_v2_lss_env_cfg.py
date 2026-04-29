@@ -73,12 +73,21 @@ class SesV2LssSceneCfg(InteractiveSceneCfg):
         spawn=sim_utils.DomeLightCfg(color=(0.9, 0.9, 0.9), intensity=5000.0),
     )
 
+    '''
     table = AssetBaseCfg(
         prim_path="{ENV_REGEX_NS}/Table",
         spawn=sim_utils.UsdFileCfg(
             usd_path=f"{ISAAC_NUCLEUS_DIR}/Props/Mounts/SeattleLabTable/table_instanceable.usd",
         ),
         init_state=AssetBaseCfg.InitialStateCfg(pos=(0.55, 0.0, 0.0), rot=(0.70711, 0.0, 0.0, 0.70711)),
+    )
+    '''
+    table = AssetBaseCfg(
+        prim_path="{ENV_REGEX_NS}/Table",
+        spawn=sim_utils.UsdFileCfg(
+            usd_path=f"source/assets/Collected_SES_V2_LSS_5DOF/SES_V2_LSS_CASE.usd",
+        ),
+        init_state=AssetBaseCfg.InitialStateCfg(pos=(-0.04678, -0.29309, 0.26854), rot=(1.0, 0.0, 0.0, 0.0)),
     )
 
     # plane
@@ -106,7 +115,7 @@ class ActionsCfg:
     )
     '''
 
-    # Set actions for the specific robot type (franka)
+    # Set actions for the specific robot type (ses-v2-lss)
     arm_action: ActionTerm = DifferentialInverseKinematicsActionCfg(
         asset_name="robot",
         joint_names=["lss_arm_joint_1", "lss_arm_joint_2", "lss_arm_joint_3", "lss_arm_joint_4", 
@@ -167,6 +176,7 @@ class ObservationsCfg:
 @configclass
 class EventCfg:
     """Configuration for events."""
+    '''
     reset_robot_joints = EventTerm(
         func=mdp.reset_joints_by_scale,
         mode="reset",
@@ -175,14 +185,16 @@ class EventCfg:
             "velocity_range": (0.0, 0.0),
         },
     )
+    '''
+    
+    reset_all = EventTerm(func=mdp.reset_scene_to_default, mode="reset")
 
-    #reset_all = EventTerm(func=mdp.reset_scene_to_default, mode="reset")
     reset_object_position = EventTerm(
         func=mdp.reset_root_state_uniform,
         mode="reset",
         params={
-            #"pose_range": {"x": (0.15, 0.45), "y": (-0.25, 0.25), "z": (0.0, 0.0)},
-            "pose_range": {"x": (0.25, 0.25), "y": (0.0, 0.0), "z": (0.0, 0.0)},
+            "pose_range": {"x": (0.0, 0.0), "y": (0.4, 0.4), "z": (0.15, 0.15)},
+            #"pose_range": {"x": (-0.18068, -0.18068), "y": (-0.33217, -0.33217), "z": (0.12589, 0.12589)},
             "velocity_range": {},
             "asset_cfg": SceneEntityCfg("object", body_names="Object"),
         },
@@ -242,14 +254,17 @@ class TerminationsCfg:
     """Termination terms for the MDP."""
     time_out = DoneTerm(func=mdp.time_out, time_out=True)
     
+    
     object_dropping = DoneTerm(
         func=mdp.root_height_below_minimum, params={"minimum_height": -0.05, "asset_cfg": SceneEntityCfg("object")}
     )
 
+    '''
     object_out_of_bounds_x = DoneTerm(
         func=root_x_below_threshold, 
         params={"threshold": 0.15, "asset_cfg": SceneEntityCfg("object")}
     )
+    '''
 
 
 @configclass
@@ -283,11 +298,35 @@ class SesV2LssEnvCfg(ManagerBasedRLEnvCfg):
     events: EventCfg = EventCfg()
     curriculum = CurriculumCfg()
     
+    '''
     scene.object = RigidObjectCfg(
         prim_path="{ENV_REGEX_NS}/Object",
-        init_state=RigidObjectCfg.InitialStateCfg(pos=[0.25, 0.0, 0.055], rot=[1, 0, 0, 0]),
+        init_state=RigidObjectCfg.InitialStateCfg(pos=[-0.18068, -0.33217, 0.12589], rot=[1, 0, 0, 0]),
         spawn=UsdFileCfg(
             usd_path=f"source/assets/Collected_SES_V2_LSS_5DOF/dex_cube_instanceable_01.usd"
+        ),
+    )
+    '''
+
+    # Rigid body properties of each cube
+    cube_properties = RigidBodyPropertiesCfg(
+        solver_position_iteration_count=16,
+        solver_velocity_iteration_count=1,
+        max_angular_velocity=1000.0,
+        max_linear_velocity=1000.0,
+        max_depenetration_velocity=5.0,
+        disable_gravity=False,
+    )
+
+    # Set each stacking cube deterministically
+    scene.object = RigidObjectCfg(
+        prim_path="{ENV_REGEX_NS}/Cube_1",
+        init_state=RigidObjectCfg.InitialStateCfg(pos=[-0.18068, -0.33217, 0.12589], rot=[1, 0, 0, 0]),
+        spawn=UsdFileCfg(
+            usd_path=f"{ISAAC_NUCLEUS_DIR}/Props/Blocks/blue_block.usd",
+            scale=(1.0, 1.0, 1.0),
+            rigid_props=cube_properties,
+            semantic_tags=[("class", "cube_1")],
         ),
     )
     

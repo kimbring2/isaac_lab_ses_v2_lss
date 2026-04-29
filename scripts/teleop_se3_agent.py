@@ -139,7 +139,7 @@ def main() -> None:
             elif args_cli.teleop_device.lower() == "spacemouse":
                 teleop_interface = Se3SpaceMouse(Se3SpaceMouseCfg(pos_sensitivity=0.05 * sensitivity, rot_sensitivity=0.05 * sensitivity))
             elif args_cli.teleop_device.lower() == "composite":
-                teleop_interface = Se3Composite(Se3CompositeCfg(pos_sensitivity=0.05 * sensitivity, rot_sensitivity=0.05 * sensitivity))
+                teleop_interface = Se3Composite(Se3CompositeCfg(pos_sensitivity=0.05 * sensitivity, rot_sensitivity=0.15 * sensitivity))
             else:
                 logger.error(f"Unsupported teleop device: {args_cli.teleop_device}")
                 logger.error("Configure the teleop device in the environment config.")

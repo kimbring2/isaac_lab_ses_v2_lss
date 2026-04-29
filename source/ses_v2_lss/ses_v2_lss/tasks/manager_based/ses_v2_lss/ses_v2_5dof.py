@@ -26,9 +26,9 @@ SES_V2_5DOF_CFG = ArticulationCfg(
     # What is its initial position of the robot, and its joints?
     init_state=ArticulationCfg.InitialStateCfg(
         pos=(0.0, 0.0, 0.01),
-        #rot=(0.7071, 0.0, 0.7071, 0.0),
+        rot=(0.5, 0.5, 0.5, 0.5),
         joint_pos={
-            "lss_arm_joint_1": 0.0,
+            "lss_arm_joint_1": 3.14,
             "lss_arm_joint_2": 0.0,
             "lss_arm_joint_3": 0.0,
             "lss_arm_joint_4": 0.0,
