@@ -12,6 +12,7 @@ from isaaclab.actuators import ImplicitActuatorCfg
 from isaaclab.assets.articulation import ArticulationCfg
 
 import os
+import math
 
 SES_V2_5DOF_CFG = ArticulationCfg(
     # Where is the USD file for this robot?
@@ -28,11 +29,11 @@ SES_V2_5DOF_CFG = ArticulationCfg(
         pos=(0.0, 0.0, 0.01),
         rot=(0.5, 0.5, 0.5, 0.5),
         joint_pos={
-            "lss_arm_joint_1": 3.14,
-            "lss_arm_joint_2": 0.0,
-            "lss_arm_joint_3": 0.0,
-            "lss_arm_joint_4": 0.0,
-            "lss_arm_joint_6": 0.0,
+            "lss_arm_joint_1": math.radians(180),
+            "lss_arm_joint_2": math.radians(25),
+            "lss_arm_joint_3": math.radians(45),
+            "lss_arm_joint_4": math.radians(65),
+            "lss_arm_joint_6": math.radians(0),
 
             "lss_arm_joint_5": 0.0,
             "lss_arm_joint_7": 0.0,

@@ -121,9 +121,7 @@ class ActionsCfg:
         joint_names=["lss_arm_joint_1", "lss_arm_joint_2", "lss_arm_joint_3", "lss_arm_joint_4", 
                      "lss_arm_joint_6"],
         body_name="Wrist_Up",
-        controller=DifferentialIKControllerCfg(command_type="pose",
-                                               use_relative_mode=True,
-                                               ik_method="dls"),
+        controller=DifferentialIKControllerCfg(command_type="pose", use_relative_mode=True, ik_method="dls"),
         scale=0.5,
         body_offset=DifferentialInverseKinematicsActionCfg.OffsetCfg(
             pos=[0.0, 0.0, 0.58],
@@ -193,7 +191,7 @@ class EventCfg:
         func=mdp.reset_root_state_uniform,
         mode="reset",
         params={
-            "pose_range": {"x": (0.0, 0.0), "y": (0.4, 0.4), "z": (0.15, 0.15)},
+            "pose_range": {"x": (0.0, 0.0), "y": (0.0, 0.0), "z": (0.15, 0.15)},
             #"pose_range": {"x": (-0.18068, -0.18068), "y": (-0.33217, -0.33217), "z": (0.12589, 0.12589)},
             "velocity_range": {},
             "asset_cfg": SceneEntityCfg("object", body_names="Object"),
