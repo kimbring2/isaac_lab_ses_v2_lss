@@ -354,7 +354,7 @@ class SesV2LssEnvCfg(ManagerBasedRLEnvCfg):
         """Post initialization."""
         # general settings
         self.decimation = 2
-        self.episode_length_s = 5000.0
+        self.episode_length_s = 20.0
         
         # viewer settings
         self.viewer.eye = (8.0, 0.0, 5.0)
