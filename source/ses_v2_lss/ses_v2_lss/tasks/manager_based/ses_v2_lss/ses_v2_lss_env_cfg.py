@@ -18,6 +18,7 @@ ISAAC_NUCLEUS_DIR = f"{NUCLEUS_ASSET_ROOT_DIR}/Isaac"
 import isaaclab.sim as sim_utils
 from isaaclab.assets import ArticulationCfg, AssetBaseCfg, RigidObjectCfg
 from isaaclab.sensors.frame_transformer.frame_transformer_cfg import OffsetCfg
+from isaaclab.sensors import CameraCfg, TiledCameraCfg
 from isaaclab.sim.schemas.schemas_cfg import RigidBodyPropertiesCfg
 from isaaclab.sim.spawners.materials.physics_materials_cfg import RigidBodyMaterialCfg
 from isaaclab.sensors import FrameTransformerCfg
@@ -97,6 +98,47 @@ class SesV2LssSceneCfg(InteractiveSceneCfg):
         spawn=GroundPlaneCfg(),
     )
 
+    zed_x_tiled_camera: TiledCameraCfg = TiledCameraCfg(
+        # Using regex {ENV_REGEX_NS} to match all environment instances
+        prim_path="{ENV_REGEX_NS}/tiled_camera_0",
+        #prim_path="/World/envs/env_.*/Table/tiled_camera_0",
+        offset=TiledCameraCfg.OffsetCfg(
+            pos=(0.20899, -0.07824, 0.60282), 
+            rot=(0.67646, 0.20591, 0.20591, 0.67646),
+            convention="opengl"
+        ),
+        data_types=["rgb", 'depth'],
+        spawn=sim_utils.PinholeCameraCfg(
+            focal_length=2.2, 
+            focus_distance=20.0, 
+            horizontal_aperture=3.67, 
+            clipping_range=(0.01, 5.0)
+        ),
+        width=640,
+        height=480,
+    )
+
+    zed_x_mini_tiled_camera: TiledCameraCfg = TiledCameraCfg(
+        # Using regex {ENV_REGEX_NS} to match all environment instances
+        prim_path="{ENV_REGEX_NS}/tiled_camera_1",
+        #prim_path="/World/envs/env_.*/Table/tiled_camera_0",
+        offset=TiledCameraCfg.OffsetCfg(
+            pos=(-0.45882, -0.29606, 0.61594), 
+            rot=(0.67646, 0.20591, -0.20591, -0.67646),
+            convention="opengl"
+        ),
+        data_types=["rgb", 'depth'],
+        spawn=sim_utils.PinholeCameraCfg(
+            focal_length=2.2, 
+            focus_distance=20.0, 
+            horizontal_aperture=3.67, 
+            clipping_range=(0.01, 5.0)
+        ),
+        width=640,
+        height=480,
+    )
+    
+    
 
 ##
 # MDP settings
@@ -346,7 +388,27 @@ class SesV2LssEnvCfg(ManagerBasedRLEnvCfg):
             ),
         ],
     )
-    
+    '''
+    zed_x_tiled_camera: TiledCameraCfg = TiledCameraCfg(
+        # Using regex {ENV_REGEX_NS} to match all environment instances
+        prim_path="{ENV_REGEX_NS}/Table/tiled_camera_0",
+        #prim_path="/World/envs/env_.*/Table/tiled_camera_0",
+        offset=TiledCameraCfg.OffsetCfg(
+            pos=(-0.390, 0.000, 0.082), 
+            rot=(0.63732, 0.30631, 0.30631, 0.63732), 
+            convention="opengl"
+        ),
+        data_types=["rgb", 'depth'],
+        spawn=sim_utils.PinholeCameraCfg(
+            focal_length=2.6, 
+            focus_distance=60.0, 
+            horizontal_aperture=3.67, 
+            clipping_range=(0.01, 5.0)
+        ),
+        width=640,
+        height=480,
+    )
+    '''
     # Post initialization
     def __post_init__(self) -> None:
         """Post initialization."""

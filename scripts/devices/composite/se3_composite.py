@@ -175,12 +175,12 @@ class Se3Composite(DeviceBase):
                 if self._device_name == "3Dconnexion Universal Receiver":
                     if data[0] == 1:
                         if self._disable_translation == False:
-                            self._delta_pos[0] = self.pos_sensitivity * convert_buffer(data[1], data[2]) * 1.0  # Y axis
+                            self._delta_pos[0] = self.pos_sensitivity * convert_buffer(data[1], data[2]) * -1.0  # Y axis
                             self._delta_pos[2] = self.pos_sensitivity * convert_buffer(data[3], data[4]) * -1.0 # X axis
                             self._delta_pos[1] = self.pos_sensitivity * convert_buffer(data[5], data[6]) * 1.0  # Z axis
 
                         if self._disable_rotation == False:
-                            self._delta_rot[0] = self.rot_sensitivity * convert_buffer(data[1 + 6], data[2 + 6]) * 1.0
+                            self._delta_rot[0] = self.rot_sensitivity * convert_buffer(data[1 + 6], data[2 + 6]) * -1.0
                             self._delta_rot[2] = self.rot_sensitivity * convert_buffer(data[3 + 6], data[4 + 6]) * -1.0
                             self._delta_rot[1] = self.rot_sensitivity * convert_buffer(data[5 + 6], data[6 + 6]) * 1.0
                 else:
