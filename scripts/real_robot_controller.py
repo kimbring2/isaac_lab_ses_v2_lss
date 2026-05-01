@@ -25,7 +25,7 @@ def get_position(ser, servo_id):
     
     # Wait for response like *1QD<value>\r
     response = ser.read_until(b'\r').decode('ascii').strip()
-    print("response 1: ", response)
+    print(f"response from servo {servo_id}: {response}")
 
     if response.startswith(f"*{servo_id}QD"):
         try:
@@ -74,7 +74,9 @@ def main():
 
     try:
         # Example 1: Move all to 0 quickly (500ms)
-        move_joints(ser, -175, 60, -45, -80, 45, 0, 500)
+        move_joints(ser, -176, 0, 0, 0, 0, 0, 500)
+        
+        #move_joints(ser, -175, 50, -45, -80, 45, 10, 500)
         time.sleep(1)
 
         # 2. Verify and print positions for each motor
