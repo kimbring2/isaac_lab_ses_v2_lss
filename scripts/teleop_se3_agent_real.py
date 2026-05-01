@@ -40,6 +40,7 @@ simulation_app = app_launcher.app
 import logging
 import gymnasium as gym
 import torch
+import numpy as np
 
 from devices import Se3Keyboard, Se3KeyboardCfg, Se3SpaceMouse, Se3SpaceMouseCfg, Se3Composite, Se3CompositeCfg
 from isaaclab.devices.teleop_device_factory import create_teleop_device
@@ -51,6 +52,12 @@ from isaaclab_tasks.manager_based.manipulation.lift import mdp
 from isaaclab_tasks.utils import parse_env_cfg
 
 import ses_v2_lss.tasks  # noqa: F401
+
+from lss_controller import LSSArmController
+import time
+
+# 1. Initialize the arm
+arm = LSSArmController(port='/dev/ttyUSB0')
 
 # import logger
 logger = logging.getLogger(__name__)
@@ -175,6 +182,8 @@ def main() -> None:
 
     print("Teleoperation started. Press 'R' to reset the environment.")
 
+    total_step = 0
+
     # simulate environment
     while simulation_app.is_running():
         try:
@@ -197,13 +206,42 @@ def main() -> None:
                     # 2. Get the joint positions
                     current_joint_pos = robot.data.joint_pos
                     
-                    # 3. Move to CPU, convert to numpy, and flatten to a list
-                    joint_list = current_joint_pos[0].cpu().numpy().tolist()
-                    print(f"Joint Positions: {joint_list}")
+                    # 3. Move to CPU and convert to numpy
+                    joint_array = current_joint_pos[0].cpu().numpy()
 
-                    # 4. Print with formatting (e.g., 4 decimal places)
+                    # 4. Convert radians to degrees
+                    joint_degrees = np.degrees(joint_array)
+
+                    # 5. Flatten to a list
+                    joint_list = joint_degrees.tolist()
+                    #print(f"Joint Positions (Degrees): {joint_list}")
+
+                    # 6. Print with formatting
                     formatted_joints = [int(q) for q in joint_list]
-                    #print(f"Joint Positions: {formatted_joints}")
+                    # Formatted Joint Degrees: [-174, 67, 80, -12, 0, 75, -75]
+
+                    if total_step % 100 == 0:
+                        #print("formatted_joints[5]: ", formatted_joints[5])
+                        target_positions = [formatted_joints[0], 
+                                            formatted_joints[1], 
+                                            -formatted_joints[2], 
+                                            -formatted_joints[3], 
+                                            formatted_joints[5], 
+                                            formatted_joints[4]]
+                        print(f"Formatted Joint Degrees: {formatted_joints}")
+                        #arm.move_joints(target_positions, duration_ms=500)
+                        #print("total_step: ", total_step)
+
+                        time.sleep(1)
+                        
+                        # 3. Get positions
+                        #for i in range(1, 7):
+                        #    pos = arm.get_position(i)
+                        #    print(f"Servo {i} is at: {pos} degrees")
+                        
+                    # Give it time to move
+                    #time.sleep(1)
+                    total_step += 1
                 else:
                     #env.sim.render()
                     simulation_app.update()
@@ -220,6 +258,9 @@ def main() -> None:
     # close the simulator
     env.close()
     print("Environment closed")
+
+    # 4. Always good practice to close
+    arm.close()
 
 
 if __name__ == "__main__":
