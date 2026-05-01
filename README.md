@@ -13,10 +13,16 @@ A project to train a arm-type robot to pick up and place the object well on a Co
 git clone https://github.com/kimbring2/isaac_lab_ses_v2_lss.git
 ```
 
+- Teleoperation through SpaceMouse Compact
+   ```bash
+   python scripts/teleop_se3_agent.py --task SES-V2-LSS-v0 --num_envs 1 --teleop_device composite --enable_cameras
+   ```
+
 - Using a python interpreter that has Isaac Lab installed, install the library in editable mode using:
 
     ```bash
     python -m pip install -e source/ses_v2_lss
+    ```
 
 - Verify that the extension is correctly installed by:
 
