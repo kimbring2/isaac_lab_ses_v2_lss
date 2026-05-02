@@ -57,8 +57,8 @@ A project to train an arm-type robot to pick up and place objects well on a Conv
 
 - To test this project with a real robot, you must buy a robot from [Lynxmotion SES-V2 Robotic Arm (5 DoF) w/ Smart Servos Kit](https://www.robotshop.com/products/lynxmotion-lss-5-dof-robotic-arm-kit?pr_prod_strat=e5_desc&pr_rec_id=3759c0319&pr_rec_pid=7487342149793&pr_ref_pid=7487349358753&pr_seq=uniform).
 
-- [3D CAD Model](https://cad.onshape.com/documents/3c2163ae82e70e0ae247b87c/w/f8a0bd1dd5d6a5aa85850674/e/f551351d66d5d5d23cd354af?renderMode=0&uiState=69f6471ceffc1f077ddb9665)
-  
+- [3D CAD Model](https://cad.onshape.com/documents/3c2163ae82e70e0ae247b87c/w/f8a0bd1dd5d6a5aa85850674/e/f551351d66d5d5d23cd354af?renderMode=0&uiState=69f6471ceffc1f077ddb9665): You can make the outer case of this project using standard [2020 aluminum profile](https://www.amazon.com/2020-aluminum-extrusion/s?k=2020+aluminum+extrusion) and [bracket](https://www.amazon.com/s?k=2020+aluminum+extrusion+bracket&crid=SAOBKUPUAKMF&sprefix=2020+aluminum+extrusion+bracke%2Caps%2C287&ref=nb_sb_noss_2).
+
   <img src="images/Case_3D_Model.png" title="" alt="Case_3D_Model.png" width="640"> 
 
 - After that, you must assign IDs from Base to 1 through 6 to the SES-V2 servo motors and change the communication baud rate to 921600(The gripper motor ID must be 5. The wrist motor is 6). Please refer to the [# 02 - SES-V2](https://wiki.lynxmotion.com/info/wiki/lynxmotion/view/ses-v2/) link for detailed information about motor settings.
