@@ -40,6 +40,11 @@ simulation_app = app_launcher.app
 import logging
 import gymnasium as gym
 import torch
+import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+import torch.nn.functional as F
+from torchvision.transforms import functional as VF
 
 from devices import Se3Keyboard, Se3KeyboardCfg, Se3SpaceMouse, Se3SpaceMouseCfg, Se3Composite, Se3CompositeCfg
 from isaaclab.devices.teleop_device_factory import create_teleop_device
@@ -175,6 +180,10 @@ def main() -> None:
 
     print("Teleoperation started. Press 'R' to reset the environment.")
 
+    # 1. Turn on interactive mode before the loop
+    plt.ion()
+    plt.figure(figsize=(10, 6))
+
     # simulate environment
     while simulation_app.is_running():
         try:
@@ -187,6 +196,50 @@ def main() -> None:
                 if teleoperation_active:
                     # process actions
                     actions = action.repeat(env.num_envs, 1)
+
+                    zed_x_camera_rgb_image = env.scene["zed_x_tiled_camera"].data.output["rgb"]
+                    zed_x_camera_depth_image = env.scene["zed_x_tiled_camera"].data.output["depth"]
+                    zed_x_camera_depth_image = zed_x_camera_depth_image.cpu().numpy()[0]
+                    #zed_x_camera_depth_image = np.transpose(zed_x_camera_depth_image, axes=(1, 2, 0))
+                    #print("zed_x_camera_depth_image.shape: ", zed_x_camera_depth_image.shape)
+                    #print("zed_x_camera_depth_image: ", zed_x_camera_depth_image)
+
+                    #zed_x_camera_depth_image = zed_x_camera_depth_image.astype(np.uint8) * 100.0
+
+                    # 2. Clear the current figure so the next frame doesn't draw over it
+                    #plt.clf()
+
+                    # 3. Draw the new data
+                    #plt.imshow(zed_x_camera_depth_image, cmap='magma') 
+                    #plt.colorbar(label='Distance (meters)')
+                    #plt.title('ZED X Depth Map Visualization')
+
+                    # 4. Use pause to update the GUI (this replaces plt.show)
+                    #plt.pause(0.001)
+
+                    '''
+                    weights = torch.tensor([0.2989, 0.5870, 0.1140], device='cuda:0').view(1, 3, 1, 1)
+                    zed_x_camera_rgb_image = zed_x_camera_rgb_image.permute(0, 3, 1, 2).float() / 255.0
+                    zed_x_camera_depth_image = zed_x_camera_depth_image.permute(0, 3, 1, 2).float() / 255.0
+
+                    #zed_x_camera_rgb_image = F.interpolate(zed_x_camera_rgb_image, size=(64, 64), mode='bilinear', 
+                    #                                       align_corners=False)
+                    zed_x_camera_rgb_image = (zed_x_camera_rgb_image * weights).sum(dim=1, keepdim=True)
+
+                    zed_x_camera_rgb_image = zed_x_camera_rgb_image.cpu().numpy()[0]
+                    zed_x_camera_depth_image = zed_x_camera_depth_image.cpu().numpy()[0]
+
+                    zed_x_camera_rgb_image = np.transpose(zed_x_camera_rgb_image, axes=(1, 2, 0)) * 255.0
+                    zed_x_camera_depth_image = np.transpose(zed_x_camera_depth_image, axes=(1, 2, 0)) * 255.0
+
+                    zed_x_camera_rgb_image = zed_x_camera_rgb_image.astype(np.uint8) 
+                    zed_x_camera_depth_image = zed_x_camera_depth_image.astype(np.uint8) 
+                    print("zed_x_camera_depth_image.shape 2: ", zed_x_camera_depth_image.shape)
+                    '''
+
+                    #cv2.imshow('ZED-X Camera RGB', zed_x_camera_rgb_image)
+                    #cv2.imshow('ZED-X Camera Depth', zed_x_camera_depth_image)
+                    #cv2.waitKey(1)
 
                     # apply actions
                     env.step(actions)

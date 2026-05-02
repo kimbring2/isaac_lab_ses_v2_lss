@@ -200,6 +200,8 @@ def main() -> None:
                     # apply actions
                     env.step(actions)
 
+                    
+
                     # 1. Access the robot asset from the scene
                     robot = env.scene["robot"]
 
