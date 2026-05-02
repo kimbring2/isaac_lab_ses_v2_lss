@@ -17,7 +17,7 @@ A project to train a arm-type robot to pick up and place the object well on a Co
   git clone https://github.com/kimbring2/isaac_lab_ses_v2_lss.git
   ```
 
-- Teleoperation through [SpaceMouse Compact](SpaceMouse Wireless - Bluetooth Edition](https://3dconnexion.com/us/product/spacemouse-wireless/) and Keyboard Key.
+- Teleoperation through [SpaceMouse Compact](https://3dconnexion.com/us/product/spacemouse-wireless/) and Keyboard Key.
   
   <img src="images/spacemouse.png" title="" alt="A cozy campfire" width="368">
   
