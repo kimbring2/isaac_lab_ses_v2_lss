@@ -61,6 +61,9 @@ A project to train an arm-type robot to pick up and place objects well on a Conv
 
   <img src="images/Case_3D_Model.png" title="" alt="Case_3D_Model.png" width="640"> 
 
+- [ZED-X and ZED-X Mini cameras](https://www.stereolabs.com/en-jp/products/zed-x) and [ZED Box](https://www.stereolabs.com/en-jp/series/zed-box) are used for grabbing visual information. 
+  <img src="images/ZED_Camera.png" title="" alt="ZED_Camera.png" width="640"> 
+
 - After that, you must assign IDs from Base to 1 through 6 to the SES-V2 servo motors and change the communication baud rate to 921600(The gripper motor ID must be 5. The wrist motor is 6). Please refer to the [# 02 - SES-V2](https://wiki.lynxmotion.com/info/wiki/lynxmotion/view/ses-v2/) link for detailed information about motor settings.
 
 - After finishing the above settings, you can control the real robot through the command below. 
