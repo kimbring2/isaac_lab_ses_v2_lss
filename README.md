@@ -25,9 +25,9 @@ A project to train a arm-type robot to pick up and place the object well on a Co
   python scripts/teleop_se3_agent.py --task SES-V2-LSS-v0 --num_envs 1 --teleop_device composite --enable_cameras
   ```
   
-  Keyboard T key is needed to toggle the translation through x, y, and z axis. R key is for rotation.
+  The keyboard T key is needed to toggle the translation through x, y, and z axis. R key is for rotation.
 
-- Using a python interpreter that has Isaac Lab installed, install the library in editable mode using:
+- Using a Python interpreter that has Isaac Lab installed, install the library in editable mode using:
   
   ```bash
   python -m pip install -e source/ses_v2_lss
