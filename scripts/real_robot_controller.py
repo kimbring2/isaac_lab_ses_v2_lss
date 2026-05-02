@@ -6,7 +6,7 @@ arm = LSSArmController(port='/dev/ttyUSB0')
 
 # 2. Move joints (Pass as a list)
 #target_positions = [-176, 0, 0, 0, 45, 0]
-target_positions = [-180, 25, -45, 0, 0, 0]
+target_positions = [-176, 35, -25, -80, 0, 0]
 arm.move_joints(target_positions, duration_ms=500)
 
 # Give it time to move

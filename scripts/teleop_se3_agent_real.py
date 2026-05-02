@@ -222,17 +222,17 @@ def main() -> None:
 
                     if total_step % 100 == 0:
                         #print("formatted_joints[5]: ", formatted_joints[5])
-                        target_positions = [formatted_joints[0], 
+                        target_positions = [formatted_joints[0] + 4, 
                                             formatted_joints[1], 
                                             -formatted_joints[2], 
                                             -formatted_joints[3], 
                                             formatted_joints[5], 
                                             formatted_joints[4]]
                         print(f"Formatted Joint Degrees: {formatted_joints}")
-                        #arm.move_joints(target_positions, duration_ms=500)
+                        arm.move_joints(target_positions, duration_ms=500)
                         #print("total_step: ", total_step)
 
-                        time.sleep(1)
+                        time.sleep(0.5)
                         
                         # 3. Get positions
                         #for i in range(1, 7):

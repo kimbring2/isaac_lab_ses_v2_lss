@@ -174,7 +174,7 @@ class ActionsCfg:
     gripper_action = mdp.BinaryJointPositionActionCfg(
         asset_name="robot",
         joint_names=["lss_arm_joint_5", "lss_arm_joint_7"],
-        open_command_expr={"lss_arm_joint_5": -0.78 * 3, "lss_arm_joint_7": 0.78 * 3},
+        open_command_expr={"lss_arm_joint_5": -0.78 * 2, "lss_arm_joint_7": 0.78 * 2},
         close_command_expr={"lss_arm_joint_5": 0.0, "lss_arm_joint_7": 0.0}
     )
 

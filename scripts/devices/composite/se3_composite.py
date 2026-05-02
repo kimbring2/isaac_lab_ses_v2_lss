@@ -61,7 +61,7 @@ class Se3Composite(DeviceBase):
         self._read_rotation = False
 
         # command buffers
-        self._close_gripper = False
+        self._close_gripper = True
         self._delta_pos = np.zeros(3)  # (x, y, z)
         self._delta_rot = np.zeros(3)  # (roll, pitch, yaw)
         

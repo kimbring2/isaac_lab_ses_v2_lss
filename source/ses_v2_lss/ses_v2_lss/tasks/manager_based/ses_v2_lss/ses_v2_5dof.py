@@ -30,13 +30,13 @@ SES_V2_5DOF_CFG = ArticulationCfg(
         rot=(0.5, 0.5, 0.5, 0.5),
         joint_pos={
             "lss_arm_joint_1": math.radians(-180),
-            "lss_arm_joint_2": math.radians(25),
-            "lss_arm_joint_3": math.radians(45),
-            "lss_arm_joint_4": math.radians(0),
+            "lss_arm_joint_2": math.radians(35),
+            "lss_arm_joint_3": math.radians(25),
+            "lss_arm_joint_4": math.radians(80),
             "lss_arm_joint_6": math.radians(0),
 
-            "lss_arm_joint_5": 0.0,
-            "lss_arm_joint_7": 0.0,
+            "lss_arm_joint_5": -0.04,
+            "lss_arm_joint_7": 0.04,
         }
     ),
 
@@ -48,8 +48,8 @@ SES_V2_5DOF_CFG = ArticulationCfg(
             effort_limit_sim=28.16,
             velocity_limit=19.0,    
             velocity_limit_sim=19.0,
-            stiffness=3200.0,
-            damping=320.0,
+            stiffness=400.0,
+            damping=40.0,
         ),
 
         "gripper": ImplicitActuatorCfg(
@@ -57,8 +57,8 @@ SES_V2_5DOF_CFG = ArticulationCfg(
             effort_limit_sim=5.816,
             velocity_limit=19.0,
             velocity_limit_sim=19.0,
-            stiffness=1600.0,
-            damping=320.0,
+            stiffness=200.0,
+            damping=20.0,
         ),
     }
 )
