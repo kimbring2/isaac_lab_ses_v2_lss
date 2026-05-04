@@ -41,6 +41,7 @@ import logging
 import gymnasium as gym
 import torch
 import numpy as np
+import matplotlib.pyplot as plt
 
 from devices import Se3Keyboard, Se3KeyboardCfg, Se3SpaceMouse, Se3SpaceMouseCfg, Se3Composite, Se3CompositeCfg
 from isaaclab.devices.teleop_device_factory import create_teleop_device
@@ -55,9 +56,41 @@ import ses_v2_lss.tasks  # noqa: F401
 
 from lss_controller import LSSArmController
 import time
+import sys
+import pyzed.sl as sl
+import cv2
+import argparse
+import socket 
 
-# 1. Initialize the arm
+
+# Initialize the arm
 arm = LSSArmController(port='/dev/ttyUSB0')
+
+# Initialize the ZED Camera
+ip_address = '192.168.0.191:30000'
+camera_settings = sl.VIDEO_SETTINGS.BRIGHTNESS
+str_camera_settings = "BRIGHTNESS"
+step_camera_settings = 1
+led_on = True 
+selection_rect = sl.Rect()
+select_in_progress = False
+origin_rect = (-1, -1)
+
+init_parameters = sl.InitParameters()
+init_parameters.depth_mode = sl.DEPTH_MODE.NEURAL
+init_parameters.sdk_verbose = 1
+init_parameters.set_from_stream(ip_address.split(':')[0], int(ip_address.split(':')[1]))
+cam = sl.Camera()
+status = cam.open(init_parameters)
+if status > sl.ERROR_CODE.SUCCESS:
+    print("Camera Open : " + repr(status) + ". Exit program.")
+    exit()
+
+runtime = sl.RuntimeParameters()
+win_name = "Camera Remote Control"
+mat = sl.Mat()
+cv2.namedWindow(win_name)
+
 
 # import logger
 logger = logging.getLogger(__name__)
@@ -184,6 +217,10 @@ def main() -> None:
 
     total_step = 0
 
+    # 1. Turn on interactive mode before the loop
+    plt.ion()
+    plt.figure(figsize=(10, 6))
+
     # simulate environment
     while simulation_app.is_running():
         try:
@@ -194,13 +231,50 @@ def main() -> None:
 
                 # Only apply teleop commands when active
                 if teleoperation_active:
+                    zed_x_camera_rgb_image = env.scene["zed_x_tiled_camera"].data.output["rgb"]
+                    zed_x_camera_depth_image = env.scene["zed_x_tiled_camera"].data.output["depth"]
+                    zed_x_camera_depth_image = zed_x_camera_depth_image.cpu().numpy()[0]
+
+                    # 1. Normalize the depth map to an 8-bit range (0-255)
+                    # This scales the float/meter values so they can be colored
+                    depth_min = zed_x_camera_depth_image.min()
+                    depth_max = zed_x_camera_depth_image.max()
+                    depth_normalized = cv2.normalize(zed_x_camera_depth_image, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+
+                    # 2. Apply a Colormap (COLORMAP_MAGMA is equivalent to your 'magma')
+                    # Note: COLORMAP_MAGMA was added in OpenCV 4.5.2. Use COLORMAP_JET for older versions.
+                    depth_colored = cv2.applyColorMap(depth_normalized, cv2.COLORMAP_MAGMA)
+
+                    # 3. Display the image
+                    depth_colored = cv2.resize(depth_colored, (640, 480), interpolation=cv2.INTER_LINEAR)
+                    cv2.imshow('Sim Depth Camera', depth_colored)
+
+                    err = cam.grab(runtime) # Check that a new image is successfully acquired
+                    if err <= sl.ERROR_CODE.SUCCESS:
+                        # cam.retrieve_image(mat, sl.VIEW.LEFT) # Retrieve left image
+                        cam.retrieve_image(mat, sl.VIEW.DEPTH) # Retrieve left image
+
+                        cvImage = mat.get_data()
+                        if (not selection_rect.is_empty() and selection_rect.is_contained(sl.Rect(0, 0, cvImage.shape[1], cvImage.shape[0]))):
+                            cv2.rectangle(cvImage, 
+                                          (selection_rect.x, selection_rect.y), 
+                                          (selection_rect.width + selection_rect.x, selection_rect.height + selection_rect.y), 
+                                          (220, 180, 20), 
+                                          2)
+                        
+                        cvImage = cv2.resize(cvImage, (640, 480), interpolation=cv2.INTER_LINEAR)
+                        cv2.imshow('Real Depth Camera', cvImage)
+                    else:
+                        print("Error during capture : ", err)
+                        break
+
+                    key = cv2.waitKey(5)
+
                     # process actions
                     actions = action.repeat(env.num_envs, 1)
 
                     # apply actions
                     env.step(actions)
-
-                    
 
                     # 1. Access the robot asset from the scene
                     robot = env.scene["robot"]
@@ -222,7 +296,7 @@ def main() -> None:
                     formatted_joints = [int(q) for q in joint_list]
                     # Formatted Joint Degrees: [-174, 67, 80, -12, 0, 75, -75]
 
-                    if total_step % 100 == 0:
+                    if total_step % 20 == 0:
                         #print("formatted_joints[5]: ", formatted_joints[5])
                         target_positions = [formatted_joints[0] + 4, 
                                             formatted_joints[1], 
@@ -231,6 +305,7 @@ def main() -> None:
                                             formatted_joints[5], 
                                             formatted_joints[4]]
                         print(f"Formatted Joint Degrees: {formatted_joints}")
+                        
                         arm.move_joints(target_positions, duration_ms=500)
                         #print("total_step: ", total_step)
 
@@ -263,6 +338,9 @@ def main() -> None:
 
     # 4. Always good practice to close
     arm.close()
+
+    cv2.destroyAllWindows()
+    cam.close()
 
 
 if __name__ == "__main__":
