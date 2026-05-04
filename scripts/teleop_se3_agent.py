@@ -77,7 +77,7 @@ def main() -> None:
         )
 
     # modify configuration
-    env_cfg.terminations.time_out = None
+    #env_cfg.terminations.time_out = None
 
     if "Lift" in args_cli.task:
         # set the resampling time range to large number to avoid resampling
@@ -94,7 +94,7 @@ def main() -> None:
         simulation_app.close()
         return
 
-    print("env: ", env)
+    #print("env: ", env)
 
     # Flags for controlling teleoperation flow
     should_reset_recording_instance = False

@@ -1,29 +1,19 @@
-# Copyright (c) 2022-2026, The Isaac Lab Project Developers (https://github.com/isaac-sim/IsaacLab/blob/main/CONTRIBUTORS.md).
-# All rights reserved.
-#
-# SPDX-License-Identifier: BSD-3-Clause
 """
-Script to record demonstrations with Isaac Lab environments using human teleoperation.
-
-This script allows users to record demonstrations operated by human teleoperation for a specified task.
-The recorded demonstrations are stored as episodes in a hdf5 file. Users can specify the task, teleoperation
-device, dataset directory, and environment stepping rate through command-line arguments.
-
+Script to record demonstrations with Isaac Lab environments using human teleoperation. This script allows users to record demonstrations 
+operated by human teleoperation for a specified task. The recorded demonstrations are stored as episodes in a hdf5 file. Users can specify 
+the task, teleoperation device, dataset directory, and environment stepping rate through command-line arguments.
 required arguments:
     --task                    Name of the task.
-
 optional arguments:
     -h, --help                Show this help message and exit
     --teleop_device           Device for interacting with environment. (default: keyboard)
     --dataset_file            File path to export recorded demos. (default: "./datasets/dataset.hdf5")
     --step_hz                 Environment stepping rate in Hz. (default: 30)
     --num_demos               Number of demonstrations to record. (default: 0)
-    --num_success_steps       Number of continuous steps with task success for concluding a demo as successful.
-                              (default: 10)
+    --num_success_steps       Number of continuous steps with task success for concluding a demo as successful. (default: 10)
 """
 
 """Launch Isaac Sim Simulator first."""
-
 # Standard library imports
 import argparse
 import contextlib
@@ -34,38 +24,22 @@ from isaaclab.app import AppLauncher
 # add argparse arguments
 parser = argparse.ArgumentParser(description="Record demonstrations for Isaac Lab environments.")
 parser.add_argument("--task", type=str, required=True, help="Name of the task.")
-parser.add_argument(
-    "--teleop_device",
-    type=str,
-    default="keyboard",
+parser.add_argument("--teleop_device", type=str, default="keyboard",
     help=(
         "Teleop device. Set here (legacy) or via the environment config. If using the environment config, pass the"
         " device key/name defined under 'teleop_devices' (it can be a custom name, not necessarily 'handtracking')."
         " Built-ins: keyboard, spacemouse, gamepad. Not all tasks support all built-ins."
     ),
 )
-parser.add_argument(
-    "--dataset_file", type=str, default="./datasets/dataset.hdf5", help="File path to export recorded demos."
-)
+parser.add_argument("--dataset_file", type=str, default="./datasets/dataset.hdf5", help="File path to export recorded demos.")
 parser.add_argument("--step_hz", type=int, default=30, help="Environment stepping rate in Hz.")
-parser.add_argument(
-    "--num_demos", type=int, default=0, help="Number of demonstrations to record. Set to 0 for infinite."
-)
-parser.add_argument(
-    "--num_success_steps",
-    type=int,
-    default=10,
-    help="Number of continuous steps with task success for concluding a demo as successful. Default is 10.",
-)
-parser.add_argument(
-    "--enable_pinocchio",
-    action="store_true",
-    default=False,
-    help="Enable Pinocchio.",
-)
+parser.add_argument("--num_demos", type=int, default=0, help="Number of demonstrations to record. Set to 0 for infinite.")
+parser.add_argument("--num_success_steps", type=int, default=10, 
+                    help="Number of continuous steps with task success for concluding a demo as successful. Default is 10.",)
 
 # append AppLauncher cli args
 AppLauncher.add_app_launcher_args(parser)
+
 # parse the arguments
 args_cli = parser.parse_args()
 
@@ -75,42 +49,29 @@ if args_cli.task is None:
 
 app_launcher_args = vars(args_cli)
 
-if "handtracking" in args_cli.teleop_device.lower():
-    app_launcher_args["xr"] = True
-
 # launch the simulator
 app_launcher = AppLauncher(args_cli)
 simulation_app = app_launcher.app
 
 """Rest everything follows."""
-
 # Third-party imports
 import logging
 import os
 import time
-
 import gymnasium as gym
 import torch
-
 import omni.ui as ui
-
 from devices import Se3Keyboard, Se3KeyboardCfg, Se3SpaceMouse, Se3SpaceMouseCfg, Se3Composite, Se3CompositeCfg
-from isaaclab.devices.openxr import remove_camera_configs
 from isaaclab.devices.teleop_device_factory import create_teleop_device
-
 import isaaclab_mimic.envs  # noqa: F401
 from isaaclab_mimic.ui.instruction_display import InstructionDisplay, show_subtask_instructions
-
 from collections.abc import Callable
-
 from isaaclab.envs import DirectRLEnvCfg, ManagerBasedRLEnvCfg
 from isaaclab.envs.mdp.recorders.recorders_cfg import ActionStateRecorderManagerCfg
 from isaaclab.envs.ui import EmptyWindow
 from isaaclab.managers import DatasetExportMode
-
 #import isaaclab_tasks  # noqa: F401
 import ses_v2_lss.tasks  # noqa: F401
-
 from isaaclab_tasks.utils.parse_cfg import parse_env_cfg
 
 # import logger
@@ -149,8 +110,7 @@ class RateLimiter:
 
 def setup_output_directories() -> tuple[str, str]:
     """Set up output directories for saving demonstrations.
-    Creates the output directory if it doesn't exist and extracts the file name
-    from the dataset file path.
+    Creates the output directory if it doesn't exist and extracts the file name from the dataset file path.
     Returns:
         tuple[str, str]: A tuple containing:
             - output_dir: The directory path where the dataset will be saved
@@ -168,9 +128,7 @@ def setup_output_directories() -> tuple[str, str]:
     return output_dir, output_file_name
 
 
-def create_environment_config(
-    output_dir: str, output_file_name: str
-) -> tuple[ManagerBasedRLEnvCfg | DirectRLEnvCfg, object | None]:
+def create_environment_config(output_dir: str, output_file_name: str) -> tuple[ManagerBasedRLEnvCfg | DirectRLEnvCfg, object | None]:
     """Create and configure the environment configuration.
     Parses the environment configuration and makes necessary adjustments for demo recording.
     Extracts the success termination function and configures the recorder manager.
@@ -198,19 +156,9 @@ def create_environment_config(
         success_term = env_cfg.terminations.success
         env_cfg.terminations.success = None
     else:
-        logger.warning(
-            "No success termination term was found in the environment."
-            " Will not be able to mark recorded demos as successful."
-        )
+        logger.warning("No success termination term was found in the environment. Will not be able to mark recorded demos as successful.")
 
-    if args_cli.xr:
-        # If cameras are not enabled and XR is enabled, remove camera configs
-        if not args_cli.enable_cameras:
-            env_cfg = remove_camera_configs(env_cfg)
-        env_cfg.sim.render.antialiasing_mode = "DLSS"
-
-    # modify configuration such that the environment runs indefinitely until
-    # the goal is reached or other termination conditions are met
+    # modify configuration such that the environment runs indefinitely until the goal is reached or other termination conditions are met
     env_cfg.terminations.time_out = None
     env_cfg.observations.policy.concatenate_terms = False
 
@@ -245,8 +193,7 @@ def setup_teleop_device(callbacks: dict[str, Callable]) -> object:
     Attempts to create a teleoperation device based on the environment configuration.
     Falls back to default devices if the specified device is not found in the configuration.
     Args:
-        callbacks: Dictionary mapping callback keys to functions that will be
-                   attached to the teleop device
+        callbacks: Dictionary mapping callback keys to functions that will be attached to the teleop device
     Returns:
         object: The configured teleoperation device interface
     Raises:
@@ -257,9 +204,8 @@ def setup_teleop_device(callbacks: dict[str, Callable]) -> object:
         if hasattr(env_cfg, "teleop_devices") and args_cli.teleop_device in env_cfg.teleop_devices.devices:
             teleop_interface = create_teleop_device(args_cli.teleop_device, env_cfg.teleop_devices.devices, callbacks)
         else:
-            logger.warning(
-                f"No teleop device '{args_cli.teleop_device}' found in environment config. Creating default."
-            )
+            logger.warning(f"No teleop device '{args_cli.teleop_device}' found in environment config. Creating default.")
+            
             # Create fallback teleop device
             if args_cli.teleop_device.lower() == "keyboard":
                 teleop_interface = Se3Keyboard(Se3KeyboardCfg(pos_sensitivity=0.2, rot_sensitivity=0.5))
@@ -288,21 +234,19 @@ def setup_teleop_device(callbacks: dict[str, Callable]) -> object:
 
 def setup_ui(label_text: str, env: gym.Env) -> InstructionDisplay:
     """Set up the user interface elements.
-    Creates instruction display and UI window with labels for showing information
-    to the user during demonstration recording.
+    Creates instruction display and UI window with labels for showing information to the user during demonstration recording.
     Args:
         label_text: Text to display showing current recording status
         env: The environment instance for which UI is being created
     Returns:
         InstructionDisplay: The configured instruction display object
     """
-    instruction_display = InstructionDisplay(args_cli.xr)
-    if not args_cli.xr:
-        window = EmptyWindow(env, "Instruction")
-        with window.ui_window_elements["main_vstack"]:
-            demo_label = ui.Label(label_text)
-            subtask_label = ui.Label("")
-            instruction_display.set_labels(subtask_label, demo_label)
+    instruction_display = InstructionDisplay(False)
+    window = EmptyWindow(env, "Instruction")
+    with window.ui_window_elements["main_vstack"]:
+        demo_label = ui.Label(label_text)
+        subtask_label = ui.Label("")
+        instruction_display.set_labels(subtask_label, demo_label)
 
     return instruction_display
 
@@ -327,9 +271,7 @@ def process_success_condition(env: gym.Env, success_term: object | None, success
         success_step_count += 1
         if success_step_count >= args_cli.num_success_steps:
             env.recorder_manager.record_pre_reset([0], force_export_or_skip=False)
-            env.recorder_manager.set_success_to_episodes(
-                [0], torch.tensor([[True]], dtype=torch.bool, device=env.device)
-            )
+            env.recorder_manager.set_success_to_episodes([0], torch.tensor([[True]], dtype=torch.bool, device=env.device))
             env.recorder_manager.export_episodes([0])
             print("Success condition met! Recording completed.")
             return success_step_count, True
@@ -339,12 +281,9 @@ def process_success_condition(env: gym.Env, success_term: object | None, success
     return success_step_count, False
 
 
-def handle_reset(
-    env: gym.Env, success_step_count: int, instruction_display: InstructionDisplay, label_text: str
-) -> int:
+def handle_reset(env: gym.Env, success_step_count: int, instruction_display: InstructionDisplay, label_text: str) -> int:
     """Handle resetting the environment.
-    Resets the environment, recorder manager, and related state variables.
-    Updates the instruction display with current status.
+    Resets the environment, recorder manager, and related state variables. Updates the instruction display with current status.
     Args:
         env: The environment instance to reset
         success_step_count: Current count of consecutive successful steps
@@ -359,32 +298,26 @@ def handle_reset(
     env.reset()
     success_step_count = 0
     instruction_display.show_demo(label_text)
+    
     return success_step_count
 
 
-def run_simulation_loop(
-    env: gym.Env,
-    teleop_interface: object | None,
-    success_term: object | None,
-    rate_limiter: RateLimiter | None,
-) -> int:
+def run_simulation_loop(env: gym.Env, teleop_interface: object | None, success_term: object | None, rate_limiter: RateLimiter | None,) -> int:
     """Run the main simulation loop for collecting demonstrations.
-    Sets up callback functions for teleop device, initializes the UI,
-    and runs the main loop that processes user inputs and environment steps.
+    Sets up callback functions for teleop device, initializes the UI, and runs the main loop that processes user inputs and environment steps.
     Records demonstrations when success conditions are met.
     Args:
         env: The environment instance
         teleop_interface: Optional teleop interface (will be created if None)
         success_term: The success termination object or None if not available
         rate_limiter: Optional rate limiter to control simulation speed
-
     Returns:
         int: Number of successful demonstrations recorded
     """
     current_recorded_demo_count = 0
     success_step_count = 0
     should_reset_recording_instance = False
-    running_recording_instance = not args_cli.xr
+    running_recording_instance = not False
 
     # Callback closures for the teleop device
     def reset_recording_instance():
@@ -403,12 +336,8 @@ def run_simulation_loop(
         print("Recording paused")
 
     # Set up teleoperation callbacks
-    teleoperation_callbacks = {
-        "R": reset_recording_instance,
-        "START": start_recording_instance,
-        "STOP": stop_recording_instance,
-        "RESET": reset_recording_instance,
-    }
+    teleoperation_callbacks = {"R": reset_recording_instance, "START": start_recording_instance,
+                               "STOP": stop_recording_instance, "RESET": reset_recording_instance,}
 
     teleop_interface = setup_teleop_device(teleoperation_callbacks)
     teleop_interface.add_callback("R", reset_recording_instance)
@@ -427,6 +356,7 @@ def run_simulation_loop(
         while simulation_app.is_running():
             # Get keyboard command
             action = teleop_interface.advance()
+            
             # Expand to batch dimension
             actions = action.repeat(env.num_envs, 1)
 
@@ -464,6 +394,7 @@ def run_simulation_loop(
                         rate_limiter.sleep(env)
                     else:
                         env.sim.render()
+                
                 break
 
             # Handle reset if requested
@@ -483,8 +414,7 @@ def run_simulation_loop(
 
 
 def main() -> None:
-    """Collect demonstrations from the environment using teleop interfaces.
-    Main function that orchestrates the entire process:
+    """Collect demonstrations from the environment using teleop interfaces. Main function that orchestrates the entire process:
     1. Sets up rate limiting based on configuration
     2. Creates output directories for saving demonstrations
     3. Configures the environment
@@ -493,15 +423,7 @@ def main() -> None:
     Raises:
         Exception: Propagates exceptions from any of the called functions
     """
-    # if handtracking is selected, rate limiting is achieved via OpenXR
-    if args_cli.xr:
-        rate_limiter = None
-        from isaaclab.ui.xr_widgets import TeleopVisualizationManager, XRVisualization
-
-        # Assign the teleop visualization manager to the visualization system
-        XRVisualization.assign_manager(TeleopVisualizationManager)
-    else:
-        rate_limiter = RateLimiter(args_cli.step_hz)
+    rate_limiter = RateLimiter(args_cli.step_hz)
 
     # Set up output directories
     output_dir, output_file_name = setup_output_directories()
@@ -525,5 +447,6 @@ def main() -> None:
 if __name__ == "__main__":
     # run the main function
     main()
+    
     # close sim app
     simulation_app.close()

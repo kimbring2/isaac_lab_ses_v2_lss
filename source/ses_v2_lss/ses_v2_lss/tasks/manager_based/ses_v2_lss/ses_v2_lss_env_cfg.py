@@ -295,7 +295,6 @@ class TerminationsCfg:
     """Termination terms for the MDP."""
     time_out = DoneTerm(func=mdp.time_out, time_out=True)
     
-    
     object_dropping = DoneTerm(
         func=mdp.root_height_below_minimum, params={"minimum_height": -0.05, "asset_cfg": SceneEntityCfg("object")}
     )
@@ -318,6 +317,7 @@ class TerminationsCfg:
         }
     )
 
+    success = DoneTerm(func=mdp.time_out)
 
 
 @configclass
