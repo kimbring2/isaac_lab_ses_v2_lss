@@ -52,3 +52,23 @@ def object_reached_goal(
 
     # rewarded if the object is lifted above the threshold
     return distance < threshold
+
+
+def root_pos_beyond_threshold(
+    env: ManagerBasedRLEnv, 
+    threshold: float, 
+    asset_cfg: SceneEntityCfg, 
+    axis: int = 0, 
+    abs_val: bool = True
+) -> torch.Tensor:
+    """Terminate when the asset's root position exceeds a threshold."""
+    # Extract the asset (e.g., the object)
+    asset = env.scene[asset_cfg.name]
+    
+    # Get root position: [num_envs, 3] (0:x, 1:y, 2:z)
+    pos = asset.data.root_pos_w[:, axis]
+    
+    if abs_val:
+        return torch.abs(pos) > threshold
+    else:
+        return pos < threshold  # Or pos > threshold depending on your need

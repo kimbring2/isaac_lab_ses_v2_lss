@@ -232,10 +232,10 @@ class EventCfg:
         func=mdp.reset_root_state_uniform,
         mode="reset",
         params={
-            "pose_range": {"x": (0.0, 0.0), "y": (0.0, 0.0), "z": (0.15, 0.15)},
+            "pose_range": {"x": (0.0, 0.0), "y": (0.0, 0.0), "z": (0.02, 0.02)},
             #"pose_range": {"x": (-0.18068, -0.18068), "y": (-0.33217, -0.33217), "z": (0.12589, 0.12589)},
             "velocity_range": {},
-            "asset_cfg": SceneEntityCfg("object", body_names="Object"),
+            "asset_cfg": SceneEntityCfg("object", body_names="Cube"),
         },
     )
 
@@ -249,6 +249,7 @@ class RewardsCfg:
 
     lifting_object = RewTerm(func=mdp.object_is_lifted, params={"minimal_height": 0.16}, weight=15.0)
 
+    '''
     object_goal_tracking = RewTerm(
         func=mdp.object_goal_distance,
         params={"std": 0.3, "minimal_height": 0.04, "command_name": "object_pose"},
@@ -260,6 +261,7 @@ class RewardsCfg:
         params={"std": 0.05, "minimal_height": 0.04, "command_name": "object_pose"},
         weight=5.0,
     )
+    '''
 
     # action penalty
     action_rate = RewTerm(func=mdp.action_rate_l2, weight=-1e-4)
@@ -305,6 +307,18 @@ class TerminationsCfg:
     )
     '''
 
+    # New termination for X-axis threshold
+    object_out_of_bounds_z = DoneTerm(
+        func=mdp.root_pos_beyond_threshold, 
+        params={
+            "threshold": 0.15, 
+            "asset_cfg": SceneEntityCfg("object"),
+            "axis": 2,      # 0 for X, 1 for Y
+            "abs_val": True # Terminates if |x| > 0.15
+        }
+    )
+
+
 
 @configclass
 class CurriculumCfg:
@@ -347,28 +361,6 @@ class SesV2LssEnvCfg(ManagerBasedRLEnvCfg):
     )
     '''
 
-    # Rigid body properties of each cube
-    cube_properties = RigidBodyPropertiesCfg(
-        solver_position_iteration_count=16,
-        solver_velocity_iteration_count=1,
-        max_angular_velocity=1000.0,
-        max_linear_velocity=1000.0,
-        max_depenetration_velocity=5.0,
-        disable_gravity=False,
-    )
-
-    # Set each stacking cube deterministically
-    scene.object = RigidObjectCfg(
-        prim_path="{ENV_REGEX_NS}/Cube_1",
-        init_state=RigidObjectCfg.InitialStateCfg(pos=[-0.18068, -0.33217, 0.12589], rot=[1, 0, 0, 0]),
-        spawn=UsdFileCfg(
-            usd_path=f"{ISAAC_NUCLEUS_DIR}/Props/Blocks/blue_block.usd",
-            scale=(1.0, 1.0, 1.0),
-            rigid_props=cube_properties,
-            semantic_tags=[("class", "cube_1")],
-        ),
-    )
-    
     # Listens to the required transforms
     marker_cfg = FRAME_MARKER_CFG.copy()
     marker_cfg.markers["frame"].scale = (0.1, 0.1, 0.1)
@@ -387,33 +379,35 @@ class SesV2LssEnvCfg(ManagerBasedRLEnvCfg):
             ),
         ],
     )
-    '''
-    zed_x_tiled_camera: TiledCameraCfg = TiledCameraCfg(
-        # Using regex {ENV_REGEX_NS} to match all environment instances
-        prim_path="{ENV_REGEX_NS}/Table/tiled_camera_0",
-        #prim_path="/World/envs/env_.*/Table/tiled_camera_0",
-        offset=TiledCameraCfg.OffsetCfg(
-            pos=(-0.390, 0.000, 0.082), 
-            rot=(0.63732, 0.30631, 0.30631, 0.63732), 
-            convention="opengl"
-        ),
-        data_types=["rgb", 'depth'],
-        spawn=sim_utils.PinholeCameraCfg(
-            focal_length=2.6, 
-            focus_distance=60.0, 
-            horizontal_aperture=3.67, 
-            clipping_range=(0.01, 5.0)
-        ),
-        width=640,
-        height=480,
+
+    # Rigid body properties of each cube
+    cube_properties = RigidBodyPropertiesCfg(
+        solver_position_iteration_count=16,
+        solver_velocity_iteration_count=1,
+        max_angular_velocity=1000.0,
+        max_linear_velocity=1000.0,
+        max_depenetration_velocity=5.0,
+        disable_gravity=False,
     )
-    '''
+
+    # Set each stacking cube deterministically
+    scene.object = RigidObjectCfg(
+        prim_path="{ENV_REGEX_NS}/Cube",
+        init_state=RigidObjectCfg.InitialStateCfg(pos=[-0.18068, -0.33217, 0.12589], rot=[1, 0, 0, 0]),
+        spawn=UsdFileCfg(
+            usd_path=f"{ISAAC_NUCLEUS_DIR}/Props/Blocks/blue_block.usd",
+            scale=(1.0, 1.0, 1.0),
+            rigid_props=cube_properties,
+            semantic_tags=[("class", "cube")],
+        ),
+    )
+    
     # Post initialization
     def __post_init__(self) -> None:
         """Post initialization."""
         # general settings
         self.decimation = 2
-        self.episode_length_s = 20.0
+        self.episode_length_s = 5.0
         
         # viewer settings
         self.viewer.eye = (8.0, 0.0, 5.0)

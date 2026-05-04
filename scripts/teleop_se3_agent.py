@@ -207,8 +207,8 @@ def main() -> None:
 
                     # 3. Display the image
                     depth_colored = cv2.resize(depth_colored, (640, 480), interpolation=cv2.INTER_LINEAR)
-                    cv2.imshow('Sim Depth Camera', depth_colored)
-                    cv2.waitKey(1)
+                    #cv2.imshow('Sim Depth Camera', depth_colored)
+                    #cv2.waitKey(1)
 
                     '''
                     weights = torch.tensor([0.2989, 0.5870, 0.1140], device='cuda:0').view(1, 3, 1, 1)
