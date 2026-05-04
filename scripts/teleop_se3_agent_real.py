@@ -231,14 +231,14 @@ def main() -> None:
 
                 # Only apply teleop commands when active
                 if teleoperation_active:
+
+                    '''
                     zed_x_camera_rgb_image = env.scene["zed_x_tiled_camera"].data.output["rgb"]
                     zed_x_camera_depth_image = env.scene["zed_x_tiled_camera"].data.output["depth"]
                     zed_x_camera_depth_image = zed_x_camera_depth_image.cpu().numpy()[0]
 
-                    # 1. Normalize the depth map to an 8-bit range (0-255)
-                    # This scales the float/meter values so they can be colored
-                    depth_min = zed_x_camera_depth_image.min()
-                    depth_max = zed_x_camera_depth_image.max()
+                    max_render_dist = 5.0
+                    zed_x_camera_depth_image = np.clip(zed_x_camera_depth_image, 0, max_render_dist)
                     depth_normalized = cv2.normalize(zed_x_camera_depth_image, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
 
                     # 2. Apply a Colormap (COLORMAP_MAGMA is equivalent to your 'magma')
@@ -269,6 +269,7 @@ def main() -> None:
                         break
 
                     key = cv2.waitKey(5)
+                    '''
 
                     # process actions
                     actions = action.repeat(env.num_envs, 1)
@@ -296,7 +297,8 @@ def main() -> None:
                     formatted_joints = [int(q) for q in joint_list]
                     # Formatted Joint Degrees: [-174, 67, 80, -12, 0, 75, -75]
 
-                    if total_step % 20 == 0:
+                    #print("total_step: ", total_step)
+                    if total_step % 50 == 0:
                         #print("formatted_joints[5]: ", formatted_joints[5])
                         target_positions = [formatted_joints[0] + 4, 
                                             formatted_joints[1], 

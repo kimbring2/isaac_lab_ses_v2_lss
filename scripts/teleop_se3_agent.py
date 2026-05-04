@@ -41,7 +41,6 @@ import logging
 import gymnasium as gym
 import torch
 import cv2
-import matplotlib.pyplot as plt
 import numpy as np
 import torch.nn.functional as F
 from torchvision.transforms import functional as VF
@@ -180,10 +179,6 @@ def main() -> None:
 
     print("Teleoperation started. Press 'R' to reset the environment.")
 
-    # 1. Turn on interactive mode before the loop
-    plt.ion()
-    plt.figure(figsize=(10, 6))
-
     # simulate environment
     while simulation_app.is_running():
         try:
@@ -200,22 +195,20 @@ def main() -> None:
                     zed_x_camera_rgb_image = env.scene["zed_x_tiled_camera"].data.output["rgb"]
                     zed_x_camera_depth_image = env.scene["zed_x_tiled_camera"].data.output["depth"]
                     zed_x_camera_depth_image = zed_x_camera_depth_image.cpu().numpy()[0]
-                    #zed_x_camera_depth_image = np.transpose(zed_x_camera_depth_image, axes=(1, 2, 0))
-                    #print("zed_x_camera_depth_image.shape: ", zed_x_camera_depth_image.shape)
-                    #print("zed_x_camera_depth_image: ", zed_x_camera_depth_image)
+                    max_render_dist = 5.0
+                    zed_x_camera_depth_image = np.clip(zed_x_camera_depth_image, 0, max_render_dist)
+                    depth_min = zed_x_camera_depth_image.min()
+                    depth_max = zed_x_camera_depth_image.max()
+                    depth_normalized = cv2.normalize(zed_x_camera_depth_image, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
 
-                    #zed_x_camera_depth_image = zed_x_camera_depth_image.astype(np.uint8) * 100.0
+                    # 2. Apply a Colormap (COLORMAP_MAGMA is equivalent to your 'magma')
+                    # Note: COLORMAP_MAGMA was added in OpenCV 4.5.2. Use COLORMAP_JET for older versions.
+                    depth_colored = cv2.applyColorMap(depth_normalized, cv2.COLORMAP_MAGMA)
 
-                    # 2. Clear the current figure so the next frame doesn't draw over it
-                    #plt.clf()
-
-                    # 3. Draw the new data
-                    #plt.imshow(zed_x_camera_depth_image, cmap='magma') 
-                    #plt.colorbar(label='Distance (meters)')
-                    #plt.title('ZED X Depth Map Visualization')
-
-                    # 4. Use pause to update the GUI (this replaces plt.show)
-                    #plt.pause(0.001)
+                    # 3. Display the image
+                    depth_colored = cv2.resize(depth_colored, (640, 480), interpolation=cv2.INTER_LINEAR)
+                    cv2.imshow('Sim Depth Camera', depth_colored)
+                    cv2.waitKey(1)
 
                     '''
                     weights = torch.tensor([0.2989, 0.5870, 0.1140], device='cuda:0').view(1, 3, 1, 1)

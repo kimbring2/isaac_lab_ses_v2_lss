@@ -117,7 +117,8 @@ def update_camera_settings(key, cam, runtime, mat):
         # Switch camera settings
         switch_camera_settings()
     elif key == 43:  # for '+' key
-        # Increase camera settings value.
+        # Increase camera s),
+ettings value.
         current_value = cam.get_camera_settings(camera_settings)[1]
         cam.set_camera_settings(camera_settings, current_value + step_camera_settings)
         print(str_camera_settings + ": " + str(current_value + step_camera_settings))

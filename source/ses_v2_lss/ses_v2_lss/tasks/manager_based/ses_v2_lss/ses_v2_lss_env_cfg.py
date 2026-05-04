@@ -103,15 +103,15 @@ class SesV2LssSceneCfg(InteractiveSceneCfg):
         prim_path="{ENV_REGEX_NS}/tiled_camera_0",
         #prim_path="/World/envs/env_.*/Table/tiled_camera_0",
         offset=TiledCameraCfg.OffsetCfg(
-            pos=(0.20899, -0.07824, 0.60282), 
+            pos=(0.15947, -0.30768, 0.62447), 
             rot=(0.67646, 0.20591, 0.20591, 0.67646),
             convention="opengl"
         ),
         data_types=["rgb", 'depth'],
         spawn=sim_utils.PinholeCameraCfg(
             focal_length=2.2, 
-            focus_distance=20.0, 
-            horizontal_aperture=3.67, 
+            focus_distance=0.12, 
+            horizontal_aperture=5.67, 
             clipping_range=(0.01, 5.0)
         ),
         width=640,
@@ -123,21 +123,20 @@ class SesV2LssSceneCfg(InteractiveSceneCfg):
         prim_path="{ENV_REGEX_NS}/tiled_camera_1",
         #prim_path="/World/envs/env_.*/Table/tiled_camera_0",
         offset=TiledCameraCfg.OffsetCfg(
-            pos=(-0.45882, -0.29606, 0.61594), 
+            pos=(-0.45882, -0.29606, 0.62381), 
             rot=(0.67646, 0.20591, -0.20591, -0.67646),
             convention="opengl"
         ),
         data_types=["rgb", 'depth'],
         spawn=sim_utils.PinholeCameraCfg(
             focal_length=2.2, 
-            focus_distance=20.0, 
-            horizontal_aperture=3.67, 
+            focus_distance=0.05, 
+            horizontal_aperture=5.67, 
             clipping_range=(0.01, 5.0)
         ),
         width=640,
         height=480,
     )
-    
     
 
 ##
