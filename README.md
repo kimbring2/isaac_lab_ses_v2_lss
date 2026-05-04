@@ -4,8 +4,6 @@
 
 A project to train an arm-type robot to pick up and place objects well on a Conveyor belt using deep reinforcement learning.
 
-<img src="images/SES-V2_Demo.gif" title="" alt="SES-V2_Demo" width="622">
-
 <img src="images/ses_v2_depth_camera.gif" title="" alt="ses_v2_depth_camera" width="622">
 
 ## Installation
