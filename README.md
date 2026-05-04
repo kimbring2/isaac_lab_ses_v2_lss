@@ -55,7 +55,7 @@ A project to train an arm-type robot to pick up and place objects well on a Conv
 
 ## Sim2Real
 
-- To test this project with a real robot, you must buy a robot from [Lynxmotion SES-V2 Robotic Arm (5 DoF) w/ Smart Servos Kit](https://www.robotshop.com/products/lynxmotion-lss-5-dof-robotic-arm-kit?pr_prod_strat=e5_desc&pr_rec_id=3759c0319&pr_rec_pid=7487342149793&pr_ref_pid=7487349358753&pr_seq=uniform).
+- To test this project with a real robot, you must buy a robot from [Lynxmotion SES-V2 Robotic Arm (5 DoF) w/ Smart Servos Kit](https://www.robotshop.com/products/lynxmotion-lss-5-dof-robotic-arm-kit?pr_prod_strat=e5_desc&pr_rec_id=3759c0319&pr_rec_pid=7487342149793&pr_ref_pid=7487349358753&pr_seq=uniform) and [Lynxmotion SES-V2 Conveyor HD Kit w/ LSS-HT1](https://www.robotshop.com/products/lynxmotion-lss-conveyor-hd-kit-lss-ht1?pr_prod_strat=e5_desc&pr_rec_id=09aeb6003&pr_rec_pid=7487340478625&pr_ref_pid=7487346737313&pr_seq=uniform).
 
 - [3D CAD Model](https://cad.onshape.com/documents/3c2163ae82e70e0ae247b87c/w/f8a0bd1dd5d6a5aa85850674/e/f551351d66d5d5d23cd354af?renderMode=0&uiState=69f6471ceffc1f077ddb9665): You can make the outer case of this project using standard [2020 aluminum profile](https://www.amazon.com/2020-aluminum-extrusion/s?k=2020+aluminum+extrusion) and [bracket and slide nut](https://www.amazon.com/s?k=2020+aluminum+extrusion+bracket&crid=SAOBKUPUAKMF&sprefix=2020+aluminum+extrusion+bracke%2Caps%2C287&ref=nb_sb_noss_2).
 
