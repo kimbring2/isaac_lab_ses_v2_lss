@@ -44,13 +44,13 @@ A project to train an arm-type robot to pick up and place objects well on a Conv
   - Running a training:
     
     ```bash
-    python scripts/skrl/train.py --task SES-V2-LSS-v0
+    python scripts/skrl/train.py --task SES-V2-LSS-v0 --num_envs 1 --enable_cameras
     ```
   
   - Running a test
     
     ```bash
-    python scripts/skrl/play.py --task SES-V2-LSS-v0 --num_envs 1
+    python scripts/skrl/play.py --task SES-V2-LSS-v0 --num_envs 1 --enable_cameras
     ```
 
 ## Sim2Real
